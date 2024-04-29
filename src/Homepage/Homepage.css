@@ -1,0 +1,23 @@
+.homepage{
+
+}
+
+video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: 200px;
+    z-index: -1;
+    opacity: 0.8;
+    object-fit: cover;
+  }
+
+  .homepage-section{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+  }

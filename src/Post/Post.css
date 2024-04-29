@@ -1,0 +1,46 @@
+.post{
+    background-color: white;
+    height: 100vh;
+    color: black;
+}
+
+
+.post-details{
+    background-color: lightgray;
+}
+.delete-edit-section{
+    display: block;
+    padding: 10px;
+    
+}
+
+.delete-button{
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: lightgray;
+    color: black; 
+    margin: 8px;
+}
+
+.edit-button{
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: lightgray;
+    color: white; 
+}
+
+
+.back-button{
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: lightgray;
+    color: white;
+}
+
+
+.back-button:hover{
+    cursor: pointer;
+}

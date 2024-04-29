@@ -1,0 +1,58 @@
+.createpost {
+  padding-top: 10px;
+  background-color: white;
+  height: 100vh;
+}
+
+.backfeed-section {
+  display: flex;
+  padding-left:10px ;
+}
+
+.backfeed-button {
+  border: none;
+  border-radius: 5px;
+  background-color: lightgrey;
+  font-size: 22px;
+  color: white;
+}
+
+.backfeed-button:hover{
+    cursor: pointer;
+}
+
+
+.createpost-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.title-field {
+  background-color: lightgray;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.textarea-section {
+  padding-top: 10px;
+}
+
+textarea {
+  font-size: 15px;
+  width: 400px;
+  height: 200px;
+}
+
+.post-button {
+  border: none;
+  border-radius: 5px;
+  background-color: lightgrey;
+  font-size: 22px;
+  color: white;
+}
+
+.post-button:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,46 @@
+.feed{
+    background-color: white;
+    height: 100vh;
+}
+
+
+.search-field-section{
+    padding-top: 20px;
+}
+
+
+.search-field{
+    width: 400px;
+    font-size: 22px;
+    border-radius: 10px;
+    border: none;
+    background-color: lightgray;
+}
+
+
+.createpost-section{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.createpost-button{
+    border: none;
+    border-radius: 5px;
+    background-color: lightgray;
+    color: white;
+    font-size: 22px;
+}
+
+.post{
+    background-color: lightgray;
+
+}
+
+
+h2{
+    margin: 0;
+}
+
+a{
+    color: black;
+}
