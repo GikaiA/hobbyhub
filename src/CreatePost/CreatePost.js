@@ -27,7 +27,7 @@ function CreatePost({ onUpdate }) {
       }
 
       // Insert the post into the database
-      const { data: postData, error: postError } = await supabase
+      const { error: postError } = await supabase
         .from("posts")
         .insert([{ title, content, image_url: imageUrl }]);
 

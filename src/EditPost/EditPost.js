@@ -7,31 +7,11 @@ function EditPost() {
   const { postId } = useParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
 
-  useEffect(() => {
-    // Fetch post details when the component mounts
-    fetchPostDetails();
-  }, []);
+  // useEffect(() => {
+  //   fetchPostDetails();
+  // }, []);
 
-  const fetchPostDetails = async () => {
-    try {
-      // Fetch post details from the database
-      const { data, error } = await supabase.from("posts").select("*").eq("id", postId);
-
-      if (error) {
-        console.error("Error fetching post details:", error.message);
-        return;
-      }
-
-      // Set the post details in state
-      const post = data[0];
-      setTitle(post.title);
-      setContent(post.content);
-    } catch (error) {
-      console.error("Error fetching post details:", error.message);
-    }
-  };
 
   const handleEditPost = async (e) => {
     e.preventDefault();

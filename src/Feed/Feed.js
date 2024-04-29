@@ -9,7 +9,7 @@ function Feed() {
   const [sortBy, setSortBy] = useState("created_at"); // Default sort by created time
   const { postId } = useParams(); // Get postId from route params
 
-  useEffect(() => {
+  useEffect((fetchPosts) => {
     if (postId) {
       // Fetch a specific post if postId is provided
       fetchPostById(postId);
@@ -19,22 +19,6 @@ function Feed() {
     }
   }, [postId]); // Add postId to the dependency array
 
-  const fetchPosts = async () => {
-    try {
-      const { data, error } = await supabase.from("posts").select("*");
-
-      if (error) {
-        console.error("Error fetching posts:", error.message);
-        return;
-      }
-
-      // Sort posts based on the selected criteria
-      const sortedPosts = sortPostsByCriteria(data, sortBy);
-      setPosts(sortedPosts);
-    } catch (error) {
-      console.error("Error fetching posts:", error.message);
-    }
-  };
 
   const fetchPostById = async (id) => {
     try {
@@ -55,16 +39,6 @@ function Feed() {
     }
   };
 
-  const sortPostsByCriteria = (posts, criteria) => {
-    return posts.slice().sort((a, b) => {
-      if (criteria === "created_at") {
-        return new Date(b.created_at) - new Date(a.created_at);
-      } else if (criteria === "upvotes") {
-        return b.upvotes - a.upvotes;
-      }
-      return 0;
-    });
-  };
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
