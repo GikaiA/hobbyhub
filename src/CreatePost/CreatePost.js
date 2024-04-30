@@ -1,48 +1,29 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import "./CreatePost.css";
+import { useNavigate } from "react-router-dom";
 import supabase from "../supabaseClient";
 
-function CreatePost({ onUpdate }) {
+function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); 
 
-  const handlePost = async (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      // Upload image to Supabase storage
-      let imageUrl = null;
-      if (image) {
-        const { data, error } = await supabase.storage
-          .from("posts")
-          .upload(`images/${image.name}`, image);
+      const { error } = await supabase.from("posts").insert([
+        { title, content, image_url: imageUrl }, 
+      ]);
 
-        if (error) {
-          console.error("Error uploading image:", error.message);
-          return;
-        }
-
-        imageUrl = data.Key;
-      }
-
-      // Insert the post into the database
-      const { error: postError } = await supabase
-        .from("posts")
-        .insert([{ title, content, image_url: imageUrl }]);
-
-      if (postError) {
-        console.error("Error creating post:", postError.message);
+      if (error) {
+        console.error("Error creating post:", error.message);
         return;
       }
 
-      // Clear the form fields after successful submission
-      setTitle("");
-      setContent("");
-      setImage(null);
-
-      // Notify the parent component to update the feed
-      onUpdate();
+      navigate("/feed");
     } catch (error) {
       console.error("Error creating post:", error.message);
     }
@@ -50,19 +31,24 @@ function CreatePost({ onUpdate }) {
 
   return (
     <div className="createpost">
-      <div className="backfeed-section">
-        <Link to="/feed">
-          <button className="backfeed-button">Back to Feed</button>
-        </Link>
-      </div>
-      <form className="createpost-form" onSubmit={handlePost}>
-        <input
-          className="title-field"
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+      <h2>Create Post</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="input-section">
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div className="input-section">
+          <input
+            type="text"
+            placeholder="External Image URL"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+        </div>
         <div className="textarea-section">
           <textarea
             placeholder="What's on your mind? (optional)"
@@ -70,15 +56,11 @@ function CreatePost({ onUpdate }) {
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
-        />
-        <button type="submit" className="post-button">
-          Post
-        </button>
+        <div className="button-section">
+          <button type="submit" className="createpost-button">
+            Create Post
+          </button>
+        </div>
       </form>
     </div>
   );

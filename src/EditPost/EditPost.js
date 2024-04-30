@@ -1,62 +1,86 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
 import "./EditPost.css";
+import {  useNavigate, useParams } from "react-router-dom";
 import supabase from "../supabaseClient";
 
 function EditPost() {
   const { postId } = useParams();
+  const [post, setPost] = useState(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   fetchPostDetails();
-  // }, []);
+  useEffect(() => {
+    fetchPostById(postId);
+  }, [postId]);
 
-
-  const handleEditPost = async (e) => {
-    e.preventDefault();
+  const fetchPostById = async (id) => {
     try {
-      // Update the post in the database
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("posts")
-        .update({ title, content })
-        .eq("id", postId);
+        .select("*")
+        .eq("id", id)
+        .single();
 
       if (error) {
-        console.error("Error editing post:", error.message);
+        console.error("Error fetching post:", error.message);
         return;
       }
-      
+
+      setPost(data);
+      setTitle(data.title);
+      setContent(data.content);
     } catch (error) {
-      console.error("Error editing post:", error.message);
+      console.error("Error fetching post:", error.message);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { error } = await supabase.from("posts").update([
+        { id: postId, title, content },
+      ]);
+
+      if (error) {
+        console.error("Error updating post:", error.message);
+        return;
+      }
+
+      navigate(`/post/${postId}`);
+    } catch (error) {
+      console.error("Error updating post:", error.message);
     }
   };
 
   return (
     <div className="editpost">
-      <div className="backfeed-section">
-        <Link to={`/post/${postId}`}>
-          <button className="backfeed-button">Back to Post</button>
-        </Link>
-      </div>
-      <form className="editpost-form" onSubmit={handleEditPost}>
-        <input
-          className="title-field"
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          className="content-field"
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <button type="submit" className="edit-button">
-          Save Changes
-        </button>
-      </form>
+      <h2>Edit Post</h2>
+      {post && (
+        <form onSubmit={handleSubmit}>
+          <div className="input-section">
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="textarea-section">
+            <textarea
+              placeholder="Content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
+          <div className="button-section">
+            <button type="submit" className="save-button">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

@@ -1,70 +1,48 @@
 import React, { useState, useEffect } from "react";
 import "./Post.css";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import supabase from "../supabaseClient";
 
-function Post() {
-  const { postId } = useParams();
-  const [post, setPost] = useState(null);
+function Post({ post }) {
   const [upvotes, setUpvotes] = useState(0);
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("id", postId)
-          .single();
-
-        if (error) {
-          console.error("Error fetching post:", error.message);
-          return;
-        }
-
-        setPost(data); // Set the single post
-        setUpvotes(data?.upvotes || 0); // Set upvotes count with optional chaining
-      } catch (error) {
-        console.error("Error fetching post:", error.message);
-      }
-    };
-
-    fetchPost();
-  }, [postId]);
+    if (post) {
+      setUpvotes(post.upvotes);
+    }
+  }, [post]);
 
   const handleUpvote = async () => {
     try {
-      // Update upvotes count in the database
       const { data, error } = await supabase
         .from("posts")
-        .update({ upvotes: post.upvotes + 1 }) // Increment upvotes by 1
-        .eq("id", postId)
+        .update({ upvotes: upvotes + 1 })
+        .eq("id", post.id)
         .single();
-  
+
       if (error) {
         console.error("Error updating upvotes:", error.message);
         return;
       }
-  
-      setUpvotes(data.upvotes); // Update upvotes count in state
+
+      setUpvotes(data.upvotes);
     } catch (error) {
       console.error("Error updating upvotes:", error.message);
     }
   };
-  
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-        // Delete post from the database
-        const { error } = await supabase.from("posts").delete().eq("id", postId);
+        const { error } = await supabase
+          .from("posts")
+          .delete()
+          .eq("id", post.id);
 
         if (error) {
           console.error("Error deleting post:", error.message);
           return;
         }
-
-        // Optionally, navigate back to the feed
       } catch (error) {
         console.error("Error deleting post:", error.message);
       }
@@ -80,8 +58,12 @@ function Post() {
           <p>Upvotes: {upvotes}</p>
           <button onClick={handleUpvote}>Upvote</button>
           <div className="delete-edit-section">
-            <button className="edit-button"><Link to={`/edit/${postId}`}>Edit</Link></button>
-            <button onClick={handleDelete} className="delete-button">Delete</button>
+            <button className="edit-button">
+              <Link to={`/edit/${post.id}`}>Edit</Link>
+            </button>
+            <button onClick={handleDelete} className="delete-button">
+              Delete
+            </button>
           </div>
           <div className="back-button-section">
             <Link to="/feed">
