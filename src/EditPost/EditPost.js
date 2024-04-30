@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EditPost.css";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import supabase from "../supabaseClient";
 
 function EditPost() {
@@ -39,9 +39,9 @@ function EditPost() {
     e.preventDefault();
 
     try {
-      const { error } = await supabase.from("posts").update([
-        { id: postId, title, content },
-      ]);
+      const { error } = await supabase
+        .from("posts")
+        .update([{ id: postId, title, content }]);
 
       if (error) {
         console.error("Error updating post:", error.message);
@@ -56,6 +56,10 @@ function EditPost() {
 
   return (
     <div className="editpost">
+      <div className="backfeedbutton"></div>
+      <Link to="/feed">
+        <button className="backfeed-button">Back to Feed</button>
+      </Link>
       <h2>Edit Post</h2>
       {post && (
         <form onSubmit={handleSubmit}>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./CreatePost.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import supabase from "../supabaseClient";
 
 function CreatePost() {
@@ -31,6 +31,9 @@ function CreatePost() {
 
   return (
     <div className="createpost">
+      <Link to = '/feed'><button className="backfeed-button">
+        Back to Feed
+      </button></Link>
       <h2>Create Post</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-section">
