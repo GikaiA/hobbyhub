@@ -1,6 +1,6 @@
 .post{
-    background-color: white;
-    height: 100vh;
+    /* background-color: white; */
+    /* height: 30vh; */
     color: black;
 }
 
@@ -18,8 +18,8 @@
     font-size: 20px;
     border: none;
     border-radius: 10px;
-    background-color: lightgray;
-    color: black; 
+    background-color: #585858;    ;
+    color: white; 
     margin: 8px;
 }
 
@@ -27,7 +27,7 @@
     font-size: 20px;
     border: none;
     border-radius: 10px;
-    background-color: lightgray;
+    background-color: #585858;    ;
     color: white; 
 }
 
@@ -36,7 +36,8 @@
     font-size: 20px;
     border: none;
     border-radius: 10px;
-    background-color: lightgray;
+    background-color: #585858;
+    ;
     color: white;
 }
 

@@ -29,6 +29,7 @@
     background-color: lightgray;
     color: white;
     font-size: 22px;
+    cursor: pointer;
 }
 
 .post{
@@ -37,10 +38,16 @@
 }
 
 
+.comment{
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+
 h2{
     margin: 0;
 }
 
 a{
-    color: black;
+    color: rgb(255, 255, 255);
 }

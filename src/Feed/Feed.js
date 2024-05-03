@@ -1,81 +1,87 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import "./Feed.css";
 import supabase from "../supabaseClient";
-import { Link, useParams } from "react-router-dom";
-import Post from "../Post/Post";
+import { Link } from "react-router-dom";
 
 function Feed() {
   const [posts, setPosts] = useState([]);
   const [sortBy, setSortBy] = useState("created_at");
-  const { postId } = useParams(); 
+  const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
-    if (postId) {
-      fetchPostById(postId);
-    } else {
-      fetchPosts();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId]);
+    fetchPosts();
+  }, [sortBy]);
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase.from("posts").select("*");
+      const { data: postsData, error: postsError } = await supabase
+        .from("posts")
+        .select("*")
+        .order(sortBy, { ascending: false });
 
-      if (error) {
-        console.error("Error fetching posts:", error.message);
+      if (postsError) {
+        console.error("Error fetching posts:", postsError.message);
         return;
       }
 
-      const sortedPosts = sortPostsByCriteria(data, sortBy);
-      setPosts(sortedPosts);
+      const postsWithComments = await Promise.all(
+        postsData.map(async (post) => {
+          const { data: commentsData, error: commentsError } = await supabase
+            .from("comments")
+            .select("*")
+            .eq("post_id", post.id);
+
+          if (commentsError) {
+            console.error(
+              "Error fetching comments for post:",
+              commentsError.message
+            );
+            return post;
+          }
+
+          return { ...post, comments: commentsData };
+        })
+      );
+
+      setPosts(postsWithComments);
     } catch (error) {
       console.error("Error fetching posts:", error.message);
     }
-  };
-
-  const fetchPostById = async (id) => {
-    try {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching post:", error.message);
-        return;
-      }
-
-      setPosts([data]); 
-    } catch (error) {
-      console.error("Error fetching post:", error.message);
-    }
-  };
-
-  const sortPostsByCriteria = (posts, criteria) => {
-    return posts.slice().sort((a, b) => {
-      if (criteria === "created_at") {
-        return new Date(b.created_at) - new Date(a.created_at);
-      } else if (criteria === "upvotes") {
-        return b.upvotes - a.upvotes;
-      }
-      return 0;
-    });
   };
 
   const handleSortChange = (e) => {
     setSortBy(e.target.value);
   };
 
+  const handleCommentSubmit = async (postId) => {
+    try {
+      const { data, error } = await supabase.from("comments").insert({
+        post_id: postId,
+        text: commentText,
+      });
+
+      if (error) {
+        console.error("Error adding comment:", error.message);
+        return;
+      }
+
+      setCommentText(""); // Clear comment input after submission
+      // Refresh posts after comment submission
+      fetchPosts();
+    } catch (error) {
+      console.error("Error adding comment:", error.message);
+    }
+  };
+
   return (
     <div className="feed">
       <h2>Feed</h2>
-      <div className="search-field-section">
-        <input type="text" className="search-field" placeholder="Search..." />
-      </div>
       <div className="createpost-section">
-        <Link to='/create'><button className="createpost-button">Create A Post</button></Link>
+        <Link to="/create">
+          <button className="createpost-button">Create A Post</button>
+        </Link>
       </div>
       <div className="sort-controls">
         <label>
@@ -87,9 +93,44 @@ function Feed() {
         </label>
       </div>
       {posts.map((post) => (
-        <Link key={post.id} to={`/post/${post.id}`} className="post-link">
-          <Post post={post} />
-        </Link>
+        <div key={post.id} className="post">
+          <h3>{post.title}</h3>
+          <p>{post.content}</p>
+          <p>Upvotes: {post.upvotes}</p>
+          <div className="comments">
+            <h4>Comments:</h4>
+            {post.comments &&
+              post.comments.map((comment) => (
+                <div key={comment.id} className="comment">
+                  <p>{comment.text}</p>
+                </div>
+              ))}
+          </div>
+          <form
+            className="comment-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleCommentSubmit(post.id);
+            }}
+          >
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Add a comment..."
+              required
+            />
+            <button type="submit">Comment</button>
+          </form>
+          <div className="post-buttons">
+            <button className="edit-button">
+              <Link to={`/edit/${post.id}`}>Edit</Link>
+            </button>
+            <button className="delete-button">
+              <Link to={`/delete/${post.id}`}>Delete</Link>
+            </button>
+          </div>
+        </div>
       ))}
     </div>
   );
